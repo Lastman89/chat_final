@@ -28,7 +28,7 @@ public class WriteMessage implements Runnable {
             try {
                 userWord = readerSecond.readLine();  // сообщения с консоли
                 writer.write(userWord + "\n"); // отправляем на сервер
-                Client.clientLogs(nick, userWord);
+                //Client.clientLogs(nick, userWord);
                 if (userWord.equals("exit")) {
                     break; // выходим из цикла если пришло "exit"
                 } else {
