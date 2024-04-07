@@ -1,21 +1,15 @@
 package org.example;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.*;
 import java.net.Socket;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-
-import static java.time.LocalTime.now;
 
 public class Server implements Runnable {
 
     private static Socket clientDialog;
     private BufferedReader in; // поток чтения из сокета
     private BufferedWriter out; // поток записи в сокет
+
+    public static Loger logs  = new Loger();
 
     public Server(Socket client) throws IOException {
         Server.clientDialog = client;
@@ -38,8 +32,8 @@ public class Server implements Runnable {
             out.flush(); // выталкиваем все из буфера
             //ждем сообщения от клиента
             String nickName = in.readLine();
-            //logi
-            logs(nickName, nickName);
+
+            logs.logs(nickName, nickName);
 
             out.write("Wellcome to chat, " + nickName + "\n");
             out.flush(); // выталкиваем все из буфера
@@ -52,7 +46,7 @@ public class Server implements Runnable {
                     vr.send(nickName, message);
                 }
                 //logi
-                logs(nickName, message);
+                logs.logs(nickName, message);
 
                 if (message.equalsIgnoreCase("exit")) {
                     break;
@@ -82,41 +76,4 @@ public class Server implements Runnable {
         } catch (IOException ignored) {}
     }
 
-
-    public static void logs(String nickName, String message) {
-        Path path = Paths.get("files");
-
-        File dir = new File(path + "/" + "serverLogs");
-        // пробуем создать каталог
-        if (dir.mkdir())
-            System.out.println("Каталог создан");
-
-        path = Paths.get("files/serverLogs/serverLogs.log");
-
-        try (FileWriter file = new FileWriter(path.toString(), true)) {
-            if (message.equalsIgnoreCase("exit")) {
-                message = "User " + nickName + " left chat....";
-                file.write("[" + now() + "] " + " " + message);
-                file.write("\n"); //чтобы сохранять каждый раз с новой строки
-                file.flush();
-            } else {
-                file.write("[" + now() + "] " + nickName + ": " + message);
-                file.write("\n"); //чтобы сохранять каждый раз с новой строки
-                file.flush();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    @JsonAutoDetect
-    static class serverConfig {
-        public String nameHost;
-        public int port;
-
-        serverConfig() {
-        }
-    }
 }

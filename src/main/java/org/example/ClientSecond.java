@@ -12,6 +12,9 @@ import java.nio.file.Paths;
 import static java.time.LocalTime.now;
 
 public class ClientSecond {
+
+    public static Loger Logs = new Loger();
+
     public static void main(String[] args) {
 
         //Считываем конфиги сервера
@@ -42,8 +45,6 @@ public class ClientSecond {
             writer.write(nick + "\n"); // отправляем сообщение на сервер
             writer.flush();
 
-            clientLogs(nick, nick);
-
             // проверяем живой ли канал и работаем если живой
             while (!clientSocket.isOutputShutdown()) {
                 serverAns = reader.readLine(); // ждём, что скажет сервер
@@ -60,8 +61,6 @@ public class ClientSecond {
                     break;
                 }
             }
-
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

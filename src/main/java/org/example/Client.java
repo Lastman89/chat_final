@@ -8,10 +8,21 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import static java.time.LocalTime.now;
 
 public class Client {
+    static ExecutorService executeIt = Executors.newFixedThreadPool(1);
+    //Runtime.getRuntime().availableProcessors()
+    private static BufferedReader in; // поток чтения из сокета
+
+    static PrintWriter writer;
+    static BufferedReader readerSecond;
+    static BufferedReader reader;
+    public static Loger Logs = new Loger();
+    static String ans = null; // ждём пока клиент что-нибудь
+
     public static void main(String[] args) {
 
 
@@ -30,13 +41,14 @@ public class Client {
             e.printStackTrace();
         }
 
-
         //подключаемся к серверу
         try (Socket clientSocket = new Socket(host, (int) port);
-             PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true);
-             BufferedReader readerSecond = new BufferedReader(new InputStreamReader(System.in));
-             BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+
         ) {
+
+            writer = new PrintWriter(clientSocket.getOutputStream(), true);
+            readerSecond = new BufferedReader(new InputStreamReader(System.in));
+            reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             String serverAns = reader.readLine(); // ждём, что скажет сервер
             System.out.println(serverAns); // получив - выводим на экран
             String nick = readerSecond.readLine(); // ждём пока клиент что-нибудь
@@ -44,60 +56,36 @@ public class Client {
             writer.write(nick + "\n"); // отправляем сообщение на сервер
             writer.flush();
 
-            clientLogs(nick, nick);
-            ReadMessage msg = new ReadMessage(clientSocket);
+            //Logs.clientLogs(nick, nick);
+
 
             // проверяем живой ли канал и работаем если живой
             while (!clientSocket.isOutputShutdown()) {
-                /*serverAns = reader.readLine(); // ждём, что скажет сервер
-                System.out.println(serverAns); // получив - выводим на экран*/
-                msg.run();
+                executeIt.execute(new ClientThreads(clientSocket));
 
-                String Ans = readerSecond.readLine(); // ждём пока клиент что-нибудь
+                try {
+                    ans = readerSecond.readLine();
+                    Logs.clientLogs(nick, ans);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
                 // не напишет в консоль
-                writer.write(Ans + "\n"); // отправляем сообщение на сервер
+                writer.write(ans + "\n"); // отправляем сообщение на сервер
                 writer.flush();
-
-                clientLogs(nick, Ans);
-
-                if (Ans.equalsIgnoreCase("exit")) {
+                if (ans.equalsIgnoreCase("exit")) {
                     break;
                 }
+
             }
+            // закрытие пула нитей после завершения работы всех нитей
+            executeIt.shutdown();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void clientLogs(String nick, String message) {
 
-
-        Path path = Paths.get("files");
-
-        File dir = new File(path + "/" + "clientLogs");
-        // пробуем создать каталог
-        if (dir.mkdir())
-            System.out.println("Каталог создан");
-
-        path = Paths.get("files/clientLogs/" + nick + ".log");
-        try (FileWriter file = new
-                FileWriter(path.toString(), true)) {
-            for (File items : dir.listFiles()) {
-                if (items.equals(nick)) {
-                    file.write(nick);
-                    file.write("\n");
-                } else {
-                    file.write("[" + now() + "] " + message);
-                    file.write("\n"); //чтобы сохранять каждый раз с новой строки
-                    file.flush();
-                }
-
-            }
-            file.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
 
 

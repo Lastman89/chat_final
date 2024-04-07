@@ -1,12 +1,9 @@
 package org.example;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,12 +14,14 @@ public class MultiThreadServer {
     public static final String LOCALHOST_NAME = "localhost";
     public static LinkedList<Server> serverList = new LinkedList<>(); // список всех нитей
 
+    private static Configs configs = new Configs();
+
     public static void main(String[] args) throws IOException {
 
 
         //Пуск - Выполнить - telnet - ОК - ввести o localhost port
         try {
-            ServerSocket socket = new ServerSocket(writecConfig(LOCALHOST_PORT, LOCALHOST_NAME));
+            ServerSocket socket = new ServerSocket(configs.writecConfig(LOCALHOST_PORT, LOCALHOST_NAME));
 
             //отправить
             //принять
@@ -68,32 +67,5 @@ public class MultiThreadServer {
     }
 
     //запишем конфиги для подключения в файл
-    public static int writecConfig(int port, String host) throws IOException {
-        Server.serverConfig config = new Server.serverConfig();
-        config.nameHost = host;
-        config.port = port;
 
-        //писать результат сериализации будем во Writer(StringWriter)
-        StringWriter writer = new StringWriter();
-
-        //это объект Jackson, который выполняет сериализацию
-        ObjectMapper mapper = new ObjectMapper();
-
-        // сама сериализация: 1-куда, 2-что
-        mapper.writeValue(writer, config);
-
-        //преобразовываем все записанное во StringWriter в строку
-        String result = writer.toString();
-
-        Path path = Paths.get("files/configs.json");
-        //пишем в файл конфиги
-        try (FileWriter file = new
-                FileWriter(path.toString(), false)) {
-            file.write(result);
-            file.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return port;
-    }
 }
