@@ -36,7 +36,7 @@ public class Loger {
         }
     }
 
-    static void clientLogs(String nick, String message) {
+    public static void clientLogs(String nick, String message) {
 
 
         Path path = Paths.get("files");
@@ -49,12 +49,6 @@ public class Loger {
         path = Paths.get("files/clientLogs/" + nick + ".log");
         try (FileWriter file = new
                 FileWriter(path.toString(), true)) {
-            for (File items : dir.listFiles()) {
-                if (items.equals(nick)) {
-                    file.write(nick);
-                    file.write("\n");
-                }
-            }
             file.write("[" + now() + "] " + message);
             file.write("\n"); //чтобы сохранять каждый раз с новой строки
             file.flush();

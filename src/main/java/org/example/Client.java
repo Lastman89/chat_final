@@ -42,7 +42,7 @@ public class Client {
         }
 
         //подключаемся к серверу
-        try (Socket clientSocket = new Socket(host, (int) port);
+        try (Socket clientSocket = new Socket(host, (int) port)
 
         ) {
 
