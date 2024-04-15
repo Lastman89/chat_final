@@ -36,7 +36,7 @@ public class Server implements Runnable {
             logs.logs(nickName, nickName);
 
             out.write("Wellcome to chat, " + nickName + "\n");
-            out.flush(); // выталкиваем все из буфера
+            out.flush();
             // начинаем диалог с подключенным клиентом в цикле, пока сокет не закрыт
             while (!clientDialog.isClosed()) {
 
@@ -57,11 +57,9 @@ public class Server implements Runnable {
             System.out.println("Client disconnected");
             System.out.println("Closing connections & channels.");
 
-            // закрываем сначала каналы сокета !
             in.close();
             out.close();
 
-            // потом закрываем сам сокет общения на стороне сервера!
             clientDialog.close();
 
         } catch (IOException e) {
@@ -72,7 +70,7 @@ public class Server implements Runnable {
     private void send(String nick, String msg) {
         try {
             out.write("[" + nick + "]: " + msg + "\n");
-            out.flush(); // выталкиваем все из буфера
+            out.flush();
         } catch (IOException ignored) {}
     }
 

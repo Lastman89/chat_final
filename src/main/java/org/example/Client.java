@@ -14,14 +14,12 @@ import java.util.concurrent.Executors;
 
 public class Client {
     static ExecutorService executeIt = Executors.newFixedThreadPool(1);
-    //Runtime.getRuntime().availableProcessors()
-    private static BufferedReader in; // поток чтения из сокета
 
     static PrintWriter writer;
     static BufferedReader readerSecond;
     static BufferedReader reader;
     public static Loger Logs = new Loger();
-    static String ans = null; // ждём пока клиент что-нибудь
+    static String ans = null;
 
     public static void main(String[] args) {
 
@@ -51,13 +49,9 @@ public class Client {
             reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             String serverAns = reader.readLine(); // ждём, что скажет сервер
             System.out.println(serverAns); // получив - выводим на экран
-            String nick = readerSecond.readLine(); // ждём пока клиент что-нибудь
-            // не напишет в консоль
-            writer.write(nick + "\n"); // отправляем сообщение на сервер
+            String nick = readerSecond.readLine();
+            writer.write(nick + "\n");
             writer.flush();
-
-            //Logs.clientLogs(nick, nick);
-
 
             // проверяем живой ли канал и работаем если живой
             while (!clientSocket.isOutputShutdown()) {
@@ -70,8 +64,7 @@ public class Client {
                     throw new RuntimeException(e);
                 }
 
-                // не напишет в консоль
-                writer.write(ans + "\n"); // отправляем сообщение на сервер
+                writer.write(ans + "\n");
                 writer.flush();
                 if (ans.equalsIgnoreCase("exit")) {
                     break;

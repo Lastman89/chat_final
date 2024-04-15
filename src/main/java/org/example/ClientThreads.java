@@ -33,7 +33,7 @@ public class ClientThreads implements Runnable {
             }
 
             try {
-                str = reader.readLine(); // ждем сообщения с сервер
+                str = reader.readLine();
 
                 System.out.println(str);
             } catch (IOException e) {

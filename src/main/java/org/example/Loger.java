@@ -28,7 +28,7 @@ public class Loger {
                 file.flush();
             } else {
                 file.write("[" + now() + "] " + nickName + ": " + message);
-                file.write("\n"); //чтобы сохранять каждый раз с новой строки
+                file.write("\n");
                 file.flush();
             }
         } catch (IOException e) {
@@ -50,7 +50,7 @@ public class Loger {
         try (FileWriter file = new
                 FileWriter(path.toString(), true)) {
             file.write("[" + now() + "] " + message);
-            file.write("\n"); //чтобы сохранять каждый раз с новой строки
+            file.write("\n");
             file.flush();
 
             file.flush();

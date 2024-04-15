@@ -45,7 +45,7 @@ public class MultiThreadServer {
                 }
 
                 // если комманд от сервера нет то становимся в ожидание
-                // подключения к сокету общения под именем - "clientDialog" на
+                // подключения к сокету общения под именем - "clientSocket" на
                 // серверной стороне
                 Socket clientSocket = socket.accept();
                 serverList.add(new Server(clientSocket)); // добавить новое соединенние в список
@@ -65,7 +65,5 @@ public class MultiThreadServer {
             e.printStackTrace();
         }
     }
-
-    //запишем конфиги для подключения в файл
 
 }
